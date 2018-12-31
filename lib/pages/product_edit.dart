@@ -18,13 +18,6 @@ class ProductEditPage extends StatefulWidget {
   }
 }
 
-// class User {
-//   const User(this.name);
-
-//   final String name;
-// }
-
-
 class _ProductEditPageState extends State<ProductEditPage> {
   final Map<String, dynamic> _formData = {
     'receiver': null,

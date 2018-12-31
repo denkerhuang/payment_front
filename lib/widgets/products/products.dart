@@ -7,7 +7,14 @@ import '../../models/payment.dart';
 import '../../scoped-models/main.dart';
 import '../ui_elements/title_default.dart';
 
-class Products extends StatelessWidget {
+class Products extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _ProductsState();
+  }
+}
+
+class _ProductsState extends State<Products> {
   Widget _buildProductList(BuildContext context, MainModel model) {
     List<Payment> payments = model.displayedPayments;
     Widget productCards;
@@ -26,7 +33,9 @@ class Products extends StatelessWidget {
                   elevation: 4.0,
                   splashColor: Colors.blueGrey,
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/payments');
+                    setState(() {
+                      model.fetchPayments();
+                    });
                   },
                 ),
                 SizedBox(
@@ -47,7 +56,7 @@ class Products extends StatelessWidget {
           Expanded(
               child: ListView.builder(
             itemBuilder: (BuildContext context, int index) =>
-                ProductCard(payments[index], index),
+                ProductCard(payments[index], index, model),
             itemCount: payments.length,
           ))
         ],

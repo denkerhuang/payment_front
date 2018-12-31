@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:scoped_model/scoped_model.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../scoped-models/main.dart';
 
 class AuthPage extends StatefulWidget {
@@ -81,8 +82,40 @@ class _AuthPageState extends State<AuthPage> {
       return;
     }
     _formKey.currentState.save();
-    login(_formData['email'], _formData['password']);
-    Navigator.pushReplacementNamed(context, '/payments');
+    _auth().then((_success) {
+      print(_success);
+      if (!_success) {
+        return;
+      }
+      login(_formData['email'], _formData['password']);
+      Navigator.pushReplacementNamed(context, '/payments');
+    });
+  }
+
+  final String authAPI =
+      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyA3TXfomiF0lrYwGrjmzVjpvtjEoxtODf8';
+
+  Future<bool> _auth() async {
+    Map<String, dynamic> authData = {
+      'email': _formData['email'],
+      'password': _formData['password'],
+      'returnSecureToken': true
+    };
+    try {
+      final http.Response response = await http.post(
+        authAPI,
+        body: json.encode(authData),
+        headers: {"Accept": "application/json"},
+      );
+      print(response.body);
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (error) {
+      return false;
+    }
   }
 
   @override

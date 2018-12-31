@@ -88,7 +88,6 @@ class PaymentsModel extends ConnectedPaymentsModel {
           body: json.encode(paymentData),
           headers: {"Content-Type": "application/json"});
       // await http.post(paymentAPI, body: productData);
-      print(response.body);
       if (response.statusCode != 200 && response.statusCode != 201) {
         _isLoading = false;
         notifyListeners();
@@ -126,7 +125,7 @@ class PaymentsModel extends ConnectedPaymentsModel {
         .put(
             'https://flutter-products.firebaseio.com/products/${selectedProduct.id}.json',
             body: json.encode(updateData))
-        .then((http.Response reponse) {
+        .then((http.Response response) {
       _isLoading = false;
       final Product updatedProduct = Product(
         id: selectedProduct.id,
