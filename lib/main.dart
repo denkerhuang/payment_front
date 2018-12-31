@@ -42,7 +42,8 @@ class _MyAppState extends State<MyApp> {
         routes: {
           '/': (BuildContext context) => AuthPage(),
           // '/': (BuildContext context) => ProductsPage(model),
-          // '/payments': (BuildContext context) => ProductsPage(model),
+          '/payments': (BuildContext context) => ProductsPage(model),
+          '/pendingPayments': (BuildContext context) => ProductsPage(model),
           '/admin': (BuildContext context) => ProductsAdminPage(model),
         },
         onGenerateRoute: (RouteSettings settings) {
@@ -59,19 +60,15 @@ class _MyAppState extends State<MyApp> {
             return MaterialPageRoute<bool>(
               builder: (BuildContext context) => ProductPage(product),
             );
-          } else if (pathElements[1] == 'products') {
-            if (pathElements.length == 3) {
-              final String receiver = pathElements[2];
-              print('receiver: ' + receiver);
-              model.setReceiver(receiver);
-              // final Product product = model.allProducts.firstWhere((Product product) {
-              // return product.id == productId;
-              // });
-            }
-
-            return MaterialPageRoute<bool>(
-              builder: (BuildContext context) => ProductsPage(model),
-            );
+          // } else if (pathElements[1] == 'products') {
+          //   if (pathElements.length == 3) {
+          //     final String receiver = pathElements[2];
+          //     print('receiver: ' + receiver);
+          //     model.setReceiver(receiver);
+          //   }
+          //   return MaterialPageRoute<bool>(
+          //     builder: (BuildContext context) => ProductsPage(model),
+          //   );
           }
           return null;
         },

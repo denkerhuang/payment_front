@@ -13,7 +13,9 @@ class ConnectedPaymentsModel extends Model {
   String _selProductId;
   // User _authenticatedUser;
   User _authenticatedUser = User(
-      userId: 'fdalsdfasf', email: 'jimmy.liao@gmail.com', password: 'password');
+      userId: 'fdalsdfasf',
+      email: 'jimmy.liao@gmail.com',
+      password: 'password');
   bool _isLoading = false;
 }
 
@@ -28,12 +30,21 @@ class PaymentsModel extends ConnectedPaymentsModel {
   List<Payment> _payments = [];
   List<User> _users = [];
   double totalAmount;
-  String receiver = '';
+  String _receiver = '';
+  bool _pending = false;
 
   bool _showFavorites = false;
 
+  void setPending(pending) {
+    this._pending = pending;
+  }
+
+  bool get pending {
+    return _pending;
+  }
+
   void setReceiver(receiver) {
-    this.receiver = receiver;
+    this._receiver = receiver;
   }
 
   List<Product> get allProducts {
@@ -76,7 +87,8 @@ class PaymentsModel extends ConnectedPaymentsModel {
     return _showFavorites;
   }
 
-  Future<bool> addPayment(String payer, String receiver, double price) async {
+  Future<bool> addPayment(
+      String payer, String receiver, String description, double price) async {
     _payments = [];
     _isLoading = true;
     notifyListeners();
@@ -84,6 +96,7 @@ class PaymentsModel extends ConnectedPaymentsModel {
       // 'userId': _authenticatedUser.id
       'Payer': _authenticatedUser.email,
       'Receiver': receiver,
+      'Description': description,
       'Amount': price,
     };
     try {
@@ -109,6 +122,31 @@ class PaymentsModel extends ConnectedPaymentsModel {
     //   notifyListeners();
     //   return false;
     // });
+  }
+
+  Future<bool> confirmPayment(String paymentId) async {
+    // _payments = [];
+    _isLoading = true;
+    notifyListeners();
+    String patchUrl = paymentEP + '/' + paymentId + '/confirm';
+    print('patchUrl: '+patchUrl);
+    try {
+      final http.Response response = await http.patch(patchUrl,
+          headers: {"Content-Type": "application/json"});
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+      // _isLoading = false;
+      notifyListeners();
+      fetchPayments();
+      return true;
+    } catch (error) {
+      // _isLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   Future<bool> updateProduct(
@@ -208,8 +246,13 @@ class PaymentsModel extends ConnectedPaymentsModel {
     _isLoading = true;
     notifyListeners();
     String getUrl = paymentEP + '?Payer=' + _authenticatedUser.email;
-    if (receiver != '') {
-      getUrl += '&Receiver=' + receiver;
+    if(_pending){
+      getUrl += '&Status=pending';
+    }else{
+      getUrl += '&Status=confirmed';
+    }
+    if (_receiver != '') {
+      getUrl += '&Receiver=' + _receiver;
     }
     print('getUrl: ' + getUrl);
     return http.get(getUrl).then<Null>((http.Response response) {
@@ -226,15 +269,17 @@ class PaymentsModel extends ConnectedPaymentsModel {
         _payments.add(Payment(
             paymentId: paymentList[i]['PaymentId'],
             receiver: paymentList[i]['Receiver'],
+            description: paymentList[i]['Description'] != null
+                ? paymentList[i]['Description']
+                : '',
             amount: paymentList[i]['Amount'].toDouble()));
         totalAmount += paymentList[i]['Amount'].toDouble();
-        // fetchedProductList.add(payment);
       }
 
       _isLoading = false;
       notifyListeners();
       _selProductId = null;
-      receiver = '';
+      _receiver = '';
     }).catchError((error) {
       _isLoading = false;
       notifyListeners();

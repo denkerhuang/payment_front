@@ -1,27 +1,47 @@
 import 'package:flutter/material.dart';
 
-import 'package:scoped_model/scoped_model.dart';
-
 import './price_tag.dart';
 // import '../ui_elements/title_default.dart';
 import '../../models/payment.dart';
 import '../../scoped-models/main.dart';
 
-class ProductCard extends StatefulWidget {
+class PendingPaymentCard extends StatefulWidget {
   final Payment payment;
   final int productIndex;
   final MainModel model;
 
-  ProductCard(this.payment, this.productIndex, this.model);
+  PendingPaymentCard(this.payment, this.productIndex, this.model);
 
   @override
   State<StatefulWidget> createState() {
-    return _ProductCardState();
+    return _PendingPaymentCardState();
   }
 }
 
-class _ProductCardState extends State<ProductCard> {
+class _PendingPaymentCardState extends State<PendingPaymentCard> {
   // final Product product = Product();
+
+  void _submitForm() {
+    print('confirm paymentId: ' + widget.payment.paymentId);
+    widget.model.confirmPayment(widget.payment.paymentId);
+    // widget.model.fetchPayments();
+  }
+
+  Widget _buildStatusComponet(BuildContext context, MainModel model) {
+    if (widget.payment.amount > 0) {
+      return RaisedButton(
+        color: Colors.green,
+        textColor: Colors.white,
+        child: Text('Confirm'),
+        onPressed: () => _submitForm(),
+      );
+    } else {
+      return Text(
+        '     Pending     ',
+        style: TextStyle(color: Colors.red),
+      );
+    }
+  }
 
   Widget _buildTitlePriceRow(BuildContext context, MainModel model) {
     return GestureDetector(
@@ -54,10 +74,11 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                   ]),
             ),
-            SizedBox(
-              width: 8.0,
-            ),
-            PriceTag(widget.payment.amount.toString())
+            // SizedBox(
+              // width: 16.0,
+            // ),
+            PriceTag(widget.payment.amount.toString()),
+            _buildStatusComponet(context, model)
           ],
         ),
       ),

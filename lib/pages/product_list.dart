@@ -19,7 +19,6 @@ class ProductListPage extends StatefulWidget {
 class _ProductListPageState extends State<ProductListPage> {
   @override
   initState() {
-    // widget.model.fetchPayments();
     super.initState();
   }
 

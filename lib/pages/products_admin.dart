@@ -18,9 +18,18 @@ class ProductsAdminPage extends StatelessWidget {
             title: Text('Choose'),
           ),
           ListTile(
-            leading: Icon(Icons.shop),
+            leading: Icon(Icons.attach_money),
             title: Text('All Payments'),
             onTap: () {
+              model.setPending(false);
+              Navigator.pushReplacementNamed(context, '/payments');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.burst_mode),
+            title: Text('Pending Request'),
+            onTap: () {
+              model.setPending(true);
               Navigator.pushReplacementNamed(context, '/payments');
             },
           ),

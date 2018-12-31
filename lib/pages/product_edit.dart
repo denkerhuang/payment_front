@@ -66,12 +66,12 @@ class _ProductEditPageState extends State<ProductEditPage> {
         maxLines: 4,
         decoration: InputDecoration(labelText: 'Product Description'),
         initialValue: product == null ? '' : product.description,
-        validator: (String value) {
+        // validator: (String value) {
           // if (value.trim().length <= 0) {
-          if (value.isEmpty || value.length < 10) {
-            return 'Description is required and should be 10+ characters long.';
-          }
-        },
+          // if (value.isEmpty || value.length < 4) {
+            // return 'Description is required and should be 4+ characters long.';
+          // }
+        // },
         onSaved: (String value) {
           _formData['description'] = value;
         },
@@ -111,6 +111,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
                 child: Text('Save'),
                 textColor: Colors.white,
                 onPressed: () => _submitForm(
+                    model,
                     model.addPayment,
                     model.updateProduct,
                     model.selectProduct,
@@ -156,6 +157,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
               ),
 
               _buildPriceTextField(product),
+              _buildDescriptionTextField(product),
               SizedBox(
                 height: 10.0,
               ),
@@ -167,7 +169,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  void _submitForm(
+  void _submitForm( MainModel model,
       Function addPayment, Function updateProduct, Function setSelectedProduct,
       [int selectedProductIndex]) {
     if (!_formKey.currentState.validate()) {
@@ -178,9 +180,11 @@ class _ProductEditPageState extends State<ProductEditPage> {
       addPayment(
         'jasonn.92@gmail.com',
         _formData['receiver'].email,
+        _formData['description'],
         _formData['price']
       ).then((bool success) {
         if (success) {
+          model.setPending(true);
           Navigator.pushReplacementNamed(context, '/payments')
               .then((_) => setSelectedProduct(null));
         } else {

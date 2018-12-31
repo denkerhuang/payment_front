@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../widgets/products/products.dart';
+import '../widgets/products/pending_payments.dart';
 import '../scoped-models/main.dart';
 
 class ProductsPage extends StatefulWidget {
@@ -33,11 +34,27 @@ class _ProductsPageState extends State<ProductsPage> {
           ),
           ListTile(
             leading: Icon(Icons.edit),
-            title: Text('Manage Products'),
+            title: Text('Manage Payments'),
             onTap: () {
               Navigator.pushReplacementNamed(context, '/admin');
             },
-          )
+          ),
+          ListTile(
+            leading: Icon(Icons.attach_money),
+            title: Text('All Payments'),
+            onTap: () {
+              widget.model.setPending(false);
+              Navigator.pushReplacementNamed(context, '/payments');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.attach_money),
+            title: Text('Pending Request'),
+            onTap: () {
+              widget.model.setPending(true);
+              Navigator.pushReplacementNamed(context, '/payments');
+            },
+          ),
         ],
       ),
     );
@@ -46,13 +63,20 @@ class _ProductsPageState extends State<ProductsPage> {
   Widget _buildProductsList() {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
-        Widget content = Center(child: Text('No Products Found!'));
+        Widget content = Center(child: Text('No Payments Found!'));
         if (model.displayedPayments.length > 0 && !model.isLoading) {
-          content = Products();
+          if (model.pending) {
+            content = PendingPayments();
+          } else {
+            content = Products();
+          }
         } else if (model.isLoading) {
           content = Center(child: CircularProgressIndicator());
         }
-        return RefreshIndicator(onRefresh: model.fetchPayments, child: content,) ;
+        return RefreshIndicator(
+          onRefresh: model.fetchPayments,
+          child: content,
+        );
       },
     );
   }
