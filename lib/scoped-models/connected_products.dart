@@ -17,7 +17,10 @@ class ConnectedPaymentsModel extends Model {
   bool _isLoading = false;
 }
 
-final String baseAPI = 'http://localhost:5000/mytest-d5fbd/us-central1';
+//local test
+// final String baseAPI = 'http://localhost:5000/mytest-d5fbd/us-central1';
+//dev
+final String baseAPI = 'https://us-central1-mytest-d5fbd.cloudfunctions.net';
 
 class PaymentsModel extends ConnectedPaymentsModel {
   final String paymentEP = baseAPI + '/payment';
